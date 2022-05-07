@@ -5,7 +5,7 @@ Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 ## 0. Dostarczone programy
 
-Do uruchomienia programów potrzeba [kompilatora Rusta](https://rustup.rs/).
+Do uruchomienia programów potrzeba [kompilatora Rusta](https://rustup.rs/), a także pewnych [bibliotek systemowych](https://github.com/bevyengine/bevy/blob/main/docs/linux_dependencies.md).
 
 Po zainstalowaniu kompilatora należy wykonać komendę:
 `cargo run --bin <gui/verifier>` i uzupełnić parametry.
