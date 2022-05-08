@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -g -std=gnu++20
+CFLAGS = -Wall -Wextra -Wconversion -Werror -g -std=gnu++20
 CC = g++
 
 random: random.o

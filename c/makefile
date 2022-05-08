@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -g -std=gnu17
+CFLAGS = -Wall -Wextra -Wconversion -Werror -g -std=gnu17
 CC = gcc
 
 random: random.o

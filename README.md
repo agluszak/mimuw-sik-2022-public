@@ -558,11 +558,16 @@ Można korzystać z biblioteki `Boost`, w szczególności z modułu `asio`.
 
 Rozwiązanie ma kompilować się i działać na serwerze students.
 
-Rozwiązania należy kompilować z flagami `-Wall -Wextra -O2`. Przy kompilowaniu z tymi flagami kompilator nie powinien wypisywać żadnych ostrzeżeń.
+Rozwiązania należy kompilować z flagami `-Wall -Wextra -Wconversion -Werror -O2`.
 
-Rozwiązania napisane w języku C++ powinny być kompilowane z flagą `-std=gnu++20`, a w języku C z flagą `-std=gnu17`.
+Rozwiązania napisane w języku C++ powinny być kompilowane z flagą `-std=gnu++20`, 
+a w języku C z flagą `-std=gnu17` przy użyciu `GCC 11.2` 
+lub nowszego (na students w katalogu `/opt/gcc-11.2/bin`.
 
 Rozwiązanie powinno być odpowiednio sformatowane (można użyć np. `clang-format`).
+
+Dodatkowo polecamy używanie lintera (np. `clang-tidy`, który jest zintegrowany z `CLionem`) 
+i/lub kompilowanie z flagą `-fanalyzer`.
 
 ## 5. Oddawanie rozwiązania
 

@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 uint32_t next_random(uint32_t previous) {
-    return ((uint64_t) previous * 48271) % 2147483647;
+    return (uint32_t) (((uint64_t) previous * 48271) % 2147483647);
 }
 
 int main(void) {
