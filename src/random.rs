@@ -11,9 +11,9 @@ impl Random {
     pub fn next_u32(&mut self) -> u32 {
         let seed = self.seed;
         let seed_u64 = seed as u64;
-        let value = (seed_u64 * 279410273) % 4294967291;
+        let value = (seed_u64 * 48271) % 2147483647;
         self.seed = value as u32;
-        seed
+        self.seed
     }
 
     pub fn range_u16(&mut self, min: u16, max: u16) -> u16 {
@@ -31,22 +31,13 @@ mod test {
     use super::*;
 
     #[test]
-    fn seed_1() {
-        let mut random = Random::new(1);
-        assert_eq!(random.next_u32(), 1);
-        assert_eq!(random.next_u32(), 279410273);
-        assert_eq!(random.next_u32(), 3468058228);
-        assert_eq!(random.next_u32(), 2207013437);
-        assert_eq!(random.next_u32(), 1650159168);
-    }
-
-    #[test]
-    fn seed_200000000() {
-        let mut random = Random::new(200000000);
-        assert_eq!(random.next_u32(), 200000000);
-        assert_eq!(random.next_u32(), 3248565286);
-        assert_eq!(random.next_u32(), 338750614);
-        assert_eq!(random.next_u32(), 4026670339);
-        assert_eq!(random.next_u32(), 1429408516);
+    fn seed_1234() {
+        let mut random = Random::new(1234);
+        assert_eq!(random.next_u32(), 59566414);
+        assert_eq!(random.next_u32(), 1997250508);
+        assert_eq!(random.next_u32(), 148423250);
+        assert_eq!(random.next_u32(), 533254358);
+        assert_eq!(random.next_u32(), 982122076);
+        assert_eq!(random.next_u32(), 165739424);
     }
 }

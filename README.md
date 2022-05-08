@@ -1,7 +1,10 @@
 # Bombowe roboty
-**Ostatnia aktualizacja: 07.05.2022**
+**Ostatnia aktualizacja: 08.05.2022**
 
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
+
+Historia zmian:
+- **08.05.2022** - doprecyzowanie jak obliczać wybuch kilku bomb, zmiana generatora liczb losowych, zmiana flag kompilatora
 
 ## 0. Dostarczone programy
 
@@ -10,7 +13,7 @@ Do uruchomienia programów potrzeba [kompilatora Rusta](https://rustup.rs/), a t
 Po zainstalowaniu kompilatora należy wykonać komendę:
 `cargo run --bin <gui/verifier>` i uzupełnić parametry.
 
-### 0.1 GUI
+### 0.1. GUI
 
 Interfejs graficzny dla gry Bombowe Roboty.
 GUI prawdopodobnie będzie jeszcze aktualizowane.
@@ -26,7 +29,7 @@ Spacja, J, Z - kładzie bombę.
 K, X - blokuje pole.
 ```
 
-### 0.2 Weryfikator
+### 0.2. Weryfikator
 
 Ten program pozwala sprawdzić, czy wiadomości są poprawnie serializowane.
 Innymi słowy, jest to wzorcowy deserializator. Można łączyć się z nim zarówno po TCP, jak i UDP (z parametrem `-u`).
@@ -277,31 +280,23 @@ Do wytwarzania wartości losowych należy użyć poniższego deterministycznego
 generatora liczb 32-bitowych. Kolejne wartości zwracane przez ten generator
 wyrażone są wzorem:
 
-    r_0 = seed
-    r_i = (r_{i-1} * 279410273) mod 4294967291
+    r_0 = (seed * 48271) mod 2147483647
+    r_i = (r_{i-1} * 48271) mod 2147483647
+
 
 gdzie wartość `seed` jest 32-bitowa i jest przekazywana do serwera za pomocą
-parametru `-s` (domyślnie są to 32 młodsze bity wartości zwracanej przez
-wywołanie `time(NULL)`).
-W pierwszym wywołaniu generatora powinna zostać zwrócona wartość `r_0 == seed`.
+parametru `-s`. Jeśli ten parametr nie jest zdefiniowany, można jako wartości 
+domyślnej użyć dowolnej liczby, która będzie zmieniać się przy każdym uruchomieniu, np. 
+`unsigned seed = time(NULL)` (C) 
+lub `unsigned seed = std::chrono::system_clock::now().time_since_epoch().count()` (C++).
+
+Powyższy generator odpowiada generatorowi `std::minstd_rand`.
 
 Należy użyć dokładnie takiego generatora, żeby umożliwić automatyczne testowanie
 rozwiązania (uwaga na konieczność wykonywania pośrednich obliczeń na typie
 64-bitowym).
 
-Poniżej podajemy dwa przykładowe ciągi liczb 32-bitowego typu unsigned, które zostały wygenerowane powyższą metodą:
-
-    r_0 = 1
-    r_1 = 279410273
-    r_2 = 3468058228
-    r_3 = 2207013437
-    r_4 = 1650159168
-
-    r_0 = 200000000
-    r_1 = 3248565286
-    r_2 = 338750614
-    r_3 = 4026670339
-    r_4 = 1429408516
+Przykłady użycia generatora zostały podane w plikach `c/random.c` oraz `cpp/random.cpp`.
 
 ### 2.5. Stan gry
 
@@ -434,9 +429,9 @@ x - eksplozja
 
 Pola oznaczone jako eksplozja po wybuchu A z promieniem równym 2:
 ```
-.Bx..
+.@x..
 ..x..
-Bxxxx
+@xxxx
 ..x..
 .....
 ```
@@ -445,7 +440,30 @@ A zatem zniszczone zostaną 3 bloki i oba roboty.
 
 Jeśli na polu jest bomba, blok i jacyś gracze, to wybuch bomby zniszczy blok i wszystkich graczy na tym polu stojących.
 
+```
+@@@@@
+@@AB@
+.@@@@
+```
 
+Jednoczesna eksplozja A i B z promieniem równym 2:
+```
+@@xx@
+@xxxx
+.@xx@
+```
+
+Po eksplozji:
+```
+@@..@
+@....
+.@..@
+```
+
+Eksplozja jednej bomby nie powoduje eksplozji bomb sąsiednich.
+Jeśli kilka bomb wybucha w jednej turze, to skutki eksplozji są sumą teoriomnogościową
+pojedynczych eksplozji rozpatrywanych osobno.
+W powyższym przykładzie widać że blok o współrzędnych (0, 1) nie został zniszczony.
 
 ### 2.9. Wykonywanie ruchu
 
@@ -542,7 +560,7 @@ Rozwiązanie ma kompilować się i działać na serwerze students.
 
 Rozwiązania należy kompilować z flagami `-Wall -Wextra -O2`. Przy kompilowaniu z tymi flagami kompilator nie powinien wypisywać żadnych ostrzeżeń.
 
-Rozwiązania napisane w języku C++ powinny być kompilowane z flagą `-std=c++20`, a w języku C z flagą `-std=c17`.
+Rozwiązania napisane w języku C++ powinny być kompilowane z flagą `-std=gnu++20`, a w języku C z flagą `-std=gnu17`.
 
 Rozwiązanie powinno być odpowiednio sformatowane (można użyć np. `clang-format`).
 
@@ -576,19 +594,19 @@ Ocena każdej z części zadania będzie się składała z trzech składników:
 2. testy automatyczne (50%)
 3. jakość kodu źródłowego (30%)
 
-### 6.1 Ocena wzrokowa i manualna działania programu
+### 6.1. Ocena wzrokowa i manualna działania programu
 
 - jak program reaguje, gdy zostanie wywołany z bezsensownymi argumentami? (Najlepiej jeśli wypisuje jakiś komunikat o błędzie; ważne żeby nie było segfaulta)
 - czy w grę rzeczywiście da się grać
 
-### 6.2 Testy automatyczne
+### 6.2. Testy automatyczne
 
 Testy będą obejmowały m.in.:
 - bardzo proste scenariusze testowe (czy podłączenie gracza do serwera powoduje wysłanie odpowiedniego komunikatu do klientów, czy otrzymanie wiadomości od interfejsu powoduje wysłanie wiadomości do serwera, czy otrzymanie wiadomości od serwera powoduje wysłanie wiadomości do klienta itd., czy programy prawidłowo resolvują nazwy domenowe (np. localhost), czy można się połączyć zarówno po IPv4 jak i IPv6)
 - proste scenariusze testowe (symulacja krótkiej rozgrywki z jednym graczem, czy generowanie planszy odbywa się zgodnie z powyższym opisem; czy wybuch bomby jest prawidłowo obliczany, czy prawidłowo obsługiwane są znaki spoza zakresu ASCII)
 - złożone scenariusze testowe (symulacja kilku rozgrywek z wieloma graczami)
 
-### 6.3 Jakość kodu źródłowego
+### 6.3. Jakość kodu źródłowego
 
 - absolutne podstawy: kod powinien być jednolicie sformatowany (najlepiej użyć do tego clang-format lub formatera wbudowanego w cliona), nie wyciekać pamięci, po skompilowaniu z parametrami `-Wall -Wextra` nie powinno być żadnych ostrzeżeń. Dodatkowo można sprawdzić sobie program przy użyciu lintera `clang-tidy`
 - kod powinien być sensownie podzielony na funkcje, nazwy funkcji i zmiennych powinny być znaczące (a nie np. a, b, x, y, temp) i w jednym języku
