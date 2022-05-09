@@ -3,7 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
-- **09.05.2022** - poprawki w GUI
+- **09.05.2022** - poprawki w GUI, nowe pytania w FAQ
 - **08.05.2022** - doprecyzowanie jak obliczać wybuch kilku bomb, zmiana generatora liczb losowych, zmiana flag kompilatora
 
 ## 0. Dostarczone programy
@@ -642,3 +642,9 @@ Testy będą obejmowały m.in.:
 - O: Nic (to znaczy wybuch jednej bomby nie “aktywuje” wybuchu innych bomb)
 - P: Rekord Player: { name: String, address: String }. Czy jest jakaś specyfikacja jak powinien wyglądać adres IPv4/IPv6? Czy można założyć, że dopuszczalny będzie po prostu output z funkcji inet_ntop?
 - O: Tak
+- P: Co zrobić, gdy GUI wyśle komunikat, którego nie da się sparsować, do klienta?
+- O: Zignorować
+- P: Co zrobić, gdy serwer wyśle komunikat, którego nie da się sparsować, do klienta?
+- O: Rozłączyć się, bo po niepoprawnym komunikacie nie wiadomo, kiedy miałby zacząć się poprawny komunikat
+- P: Co zrobić, gdy serwer wyśle komunikat, który da się sparsować, ale nie ma sensu? (np. wybucha bomba, która miała jeszcze 10 tur na timerze lub gracz zostaje przeniesiony nagle na drugi koniec planszy)
+- O: Serwer zawsze ma rację
