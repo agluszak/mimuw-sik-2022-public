@@ -1,9 +1,9 @@
 # Bombowe roboty
-**Ostatnia aktualizacja: 08.05.2022**
 
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **09.05.2022** - poprawki w GUI
 - **08.05.2022** - doprecyzowanie jak obliczać wybuch kilku bomb, zmiana generatora liczb losowych, zmiana flag kompilatora
 
 ## 0. Dostarczone programy
@@ -34,6 +34,9 @@ K, X - blokuje pole.
 Ten program pozwala sprawdzić, czy wiadomości są poprawnie serializowane.
 Innymi słowy, jest to wzorcowy deserializator. Można łączyć się z nim zarówno po TCP, jak i UDP (z parametrem `-u`).
 Przy uruchamianiu należy podać, jakiego rodzaju wiadomości mają być sprawdzane.
+
+Przykładowo, jeśli chcemy sprawdzić, czy klient wysyła prawidłowe wiadomości do serwera, wykonać:
+`cargo run --bin verifier -- -p <port, na którym klient myśli, że serwer nasłuchuje> -m client`
 
 ## 1. Gra Bombowe roboty
 
@@ -71,6 +74,8 @@ Serwer pamięta wszystkie zdarzenia dla bieżącej partii i przesyła je w razie
 potrzeby klientom.
 
 Klient komunikuje się z serwerem gry oraz interfejsem użytkownika.
+
+Zarówno klient jak i serwer mogą być wielowątkowe.
 
 Specyfikacje protokołów komunikacyjnych, rodzaje zdarzeń oraz formaty
 komunikatów i poleceń są opisane poniżej.
@@ -264,6 +269,7 @@ Dostarczymy program do weryfikowania poprawności danych.
     [3] BlockPlaced { position: Position },
 
     BombId: u32
+    Bomb: { position: Position, timer: u16 },
     PlayerId: u8
     Position: { x: u16, y: u16 }
     Player: { name: String, address: String }
@@ -324,7 +330,7 @@ Klient powinien przechowywać zagregowany stan tak, aby móc wysyłać komunikat
 
 ### 2.6. Podłączanie i odłączanie klientów
 
-Klient wysyła komunikat `Join` do serwera po otrzymaniu dowolnego (poprawnego) komunikatu od GUI, o ile klient jest w stanie `Lobby` (tzn. nie otrzymał od serwera komunikatu `GameStarted`.
+Klient wysyła komunikat `Join` do serwera po otrzymaniu dowolnego (poprawnego) komunikatu od GUI, o ile klient jest w stanie `Lobby` (tzn. nie otrzymał od serwera komunikatu `GameStarted`).
 
 Po podłączeniu klienta do serwera serwer wysyła do niego komunikat `Hello`.
 Jeśli rozgrywka jeszcze nie została rozpoczęta,

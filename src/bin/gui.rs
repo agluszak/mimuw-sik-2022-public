@@ -7,6 +7,7 @@ use std::net::{SocketAddr, ToSocketAddrs, UdpSocket};
 use clap::Parser;
 use lazy_static::lazy_static;
 use robots::{DisplayMessage, InputMessage, Position, MAX_UDP_LENGTH};
+use robots::serialize::{deserializer, serializer};
 
 #[derive(Parser, Debug, Clone)]
 #[clap(author, version, about, long_about = None)]
@@ -62,10 +63,7 @@ struct InputMessageSender(UdpSocket);
 struct LoadedFont(Handle<Font>);
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let args = Args::parse();
-    let socket = UdpSocket::bind(SocketAddr::from(([127, 0, 0, 1], args.port))).unwrap();
-    info!("Listening on port {}", args.port);
-    socket.connect(args.client_address).unwrap();
+    let socket = UdpSocket::bind(SocketAddr::from(([127, 0, 0, 1], ARGS.port))).unwrap();
     let socket_clone = socket.try_clone().unwrap();
 
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -76,13 +74,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         let mut buf = Box::new([0; MAX_UDP_LENGTH]);
         match socket.recv_from(&mut *buf) {
             Ok((amt, _src)) => {
-                let message = serde_json::from_slice::<DisplayMessage>(&buf[0..amt]);
+                let message = deserializer::from_bytes::<DisplayMessage>(&buf[0..amt]);
                 match message {
                     Ok(message) => {
                         info!(?message, "Received message");
                         display_tx.send(message).unwrap()
                     }
-                    Err(e) => error!("{}", e),
+                    Err(e) => error!("{:?}", e),
                 }
             }
             Err(e) => error!("{}", e),
@@ -91,7 +89,27 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.insert_resource(InputMessageSender(socket_clone));
     commands.insert_resource(DisplayMessageReceiver(display_rx));
-    commands.insert_resource(LoadedFont(asset_server.load("fonts/FiraSans-Medium.ttf")));
+
+    let loaded_font = asset_server.load("fonts/FiraSans-Medium.ttf");
+    commands.insert_resource(LoadedFont(loaded_font.clone()));
+
+    let text_style = TextStyle {
+        font: loaded_font,
+        font_size: 25.0,
+        color: Color::RED,
+    };
+    let text_alignment = TextAlignment {
+        vertical: VerticalAlign::Top,
+        horizontal: HorizontalAlign::Center,
+    };
+    let text = format!("Waiting for input from client ({}) on port {}", ARGS.client_address, ARGS.port);
+    commands
+        .spawn_bundle(Text2dBundle {
+            text: Text::with_section(text, text_style, text_alignment),
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+            ..default()
+        })
+        .insert(Renderable);
 }
 
 // This system reads from the receiver and sends events to Bevy
@@ -125,7 +143,7 @@ fn send_input(
                 _ => continue,
             };
             info!("Sending {:?}", input_message);
-            match socket.0.send(&serde_json::to_vec(&input_message).unwrap()) {
+            match socket.0.send_to(&serializer::to_bytes(input_message), ARGS.client_address) {
                 Ok(amt) => info!("Sent {} bytes", amt),
                 Err(e) => error!("{}", e),
             }
