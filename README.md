@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **10.05.2022** - doprecyzowanie jak identyfikowani są klienci
 - **09.05.2022** - poprawki w GUI, nowe pytania w FAQ
 - **08.05.2022** - doprecyzowanie jak obliczać wybuch kilku bomb, zmiana generatora liczb losowych, zmiana flag kompilatora
 
@@ -341,8 +342,9 @@ a następnie wysyła komunikat `Turn` z informacją o aktualnym stanie gry. Nume
 Jeśli rozgrywka nie jest jeszcze rozpoczęta, to wysłanie przez klienta komunikatu `Join`
 powoduje dodanie go do listy graczy. Serwer następnie rozsyła do wszystkich klientów komunikat `AcceptedPlayer`.
 
-Graczom nadawane jest ID w kolejności podłączenia (tzn. odebrania komunikatu `Join` przez serwer). Gracze rozpoznawani są po adresie IP i numerze portu.
+Graczom nadawane jest ID w kolejności podłączenia (tzn. odebrania komunikatu `Join` przez serwer). 
 Dwoje graczy może mieć taką samą nazwę.
+Ponieważ klienci łączą się z serwerem po TCP, wiadomo który komunikat przychodzi od którego klienta.
 
 Odłączenie gracza w trakcie rozgrywki powoduje tylko tyle, że jego robot przestaje się ruszać.
 Odłączenie klienta-gracza przed rozpoczęciem rozgrywki nie powoduje skreślenia go z listy graczy.
