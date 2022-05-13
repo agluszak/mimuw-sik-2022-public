@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **13.05.2022** - zmiana display na gui, dodanie pytań
 - **10.05.2022** - doprecyzowanie jak identyfikowani są klienci
 - **09.05.2022** - poprawki w GUI, nowe pytania w FAQ
 - **08.05.2022** - doprecyzowanie jak obliczać wybuch kilku bomb, zmiana generatora liczb losowych, zmiana flag kompilatora
@@ -13,6 +14,8 @@ Do uruchomienia programów potrzeba [kompilatora Rusta](https://rustup.rs/), a t
 
 Po zainstalowaniu kompilatora należy wykonać komendę:
 `cargo run --bin <gui/verifier>` i uzupełnić parametry.
+
+Skompilowany serwer (bynajmniej nie wzorcowy) jest dostępny [tutaj](https://students.mimuw.edu.pl/~agluszak/server). Został on skompilowany na maszynie `students`. Aby wyświetlały się komunikaty, należy uruchomić go ze zmienną środowiskową `RUST_LOG=debug`.
 
 ### 0.1. GUI
 
@@ -89,7 +92,7 @@ Serwer:
     -c, --players-count <u8>
     -d, --turn-duration <u64, milisekundy>
     -e, --explosion-radius <u16>
-    -h, --help                                   Print help information
+    -h, --help                                   Wypisuje jak używać programu
     -k, --initial-blocks <u16>
     -l, --game-length <u16>
     -n, --server-name <String>
@@ -101,18 +104,18 @@ Serwer:
 
 Klient:
 ```
-    -d, --display-address <(nazwa hosta):(port) lub (IPv4):(port) lub (IPv6):(port)>
-    -h, --help                                 Print help information
+    -d, --gui-address <(nazwa hosta):(port) lub (IPv4):(port) lub (IPv6):(port)>
+    -h, --help                                 Wypisuje jak używać programu
     -n, --player-name <String>
-    -p, --port <u16>
+    -p, --port <u16>                           Port na którym klient nasłuchuje komunikatów od GUI
     -s, --server-address <(nazwa hosta):(port) lub (IPv4):(port) lub (IPv6):(port)>
 ```
 
 Interfejs graficzny:
 ```
     -c, --client-address <(nazwa hosta):(port) lub (IPv4):(port) lub (IPv6):(port)>
-    -h, --help                               Print help information
-    -p, --port <u16>
+    -h, --help                               Wypisuje jak używać programu
+    -p, --port <u16>                         Port na którym GUI nasłuchuje komunikatów od klienta
 ```
 
 Do parsowania parametrów linii komend można użyć funkcji `getopt`
@@ -641,7 +644,7 @@ Testy będą obejmowały m.in.:
 - P: Jeśli gra się jeszcze nie rozpoczęła i podłączy się nowy klient, to jak rozumiem, należy wysłać do niego komunikat Hello i serię komunikatów AcceptedPlayer, by poinformować o tym jacy są obecnie gracze w Lobby. Jeśli w odpowiedzi na to, klient prześle Join to należy do wszystkich obserwatorów i graczy wysłać AcceptedPlayer, żeby wszyscy się dowiedzieli o nowym graczu. Dobrze rozumiem?
 - O: Tak właśnie
 - P: Co jeśli wybuchnie bomba, a na jej "drodze wybuchu" będzie znajdować się inna bomba?
-- O: Nic (to znaczy wybuch jednej bomby nie “aktywuje” wybuchu innych bomb)
+- O: Nic (to znaczy wybuch jednej bomby nie powoduje wybuchu innych bomb ani ich nie niszczy)
 - P: Rekord Player: { name: String, address: String }. Czy jest jakaś specyfikacja jak powinien wyglądać adres IPv4/IPv6? Czy można założyć, że dopuszczalny będzie po prostu output z funkcji inet_ntop?
 - O: Tak
 - P: Co zrobić, gdy GUI wyśle komunikat, którego nie da się sparsować, do klienta?
@@ -650,3 +653,11 @@ Testy będą obejmowały m.in.:
 - O: Rozłączyć się, bo po niepoprawnym komunikacie nie wiadomo, kiedy miałby zacząć się poprawny komunikat
 - P: Co zrobić, gdy serwer wyśle komunikat, który da się sparsować, ale nie ma sensu? (np. wybucha bomba, która miała jeszcze 10 tur na timerze lub gracz zostaje przeniesiony nagle na drugi koniec planszy)
 - O: Serwer zawsze ma rację
+- P: Co ma robić klient jak jest w trakcie gry a dostanie od serwera komuikat AcceptedPlayer/GameStarted?
+- O: Zależy od implementacji
+- P: Obliczanie score w kliencie to nie jest tak proste, że się sprawdza ile razy przyszedł komunikat o zabiciu gracza, tylko score to ilość tur, gdzie występuję przynajmniej jeden taki komunikat?
+- O: Tak
+- P: Czy id graczy się resetują przy nowej grze?
+- O: Tak
+- P: Czy dwa bloki o takich samych współrzędnych są traktowane jako jeden blok, czy jako dwa różne?
+- O: Na danym polu może stać tylko jeden blok.
