@@ -560,8 +560,6 @@ kłopotów komunikacyjnych, czasowej niedostępności sieci, zwykłych zmian jej
 konfiguracji itp.
 
 Serwer nie musi obsługiwać więcej niż 25 podłączonych klientów (graczy + obserwatorów) jednocześnie.
-Dodatkowi klienci ponad limit nie mogą jednak przeszkadzać wcześniej
-podłączonym.
 
 Programy powinny umożliwiać komunikację zarówno przy użyciu IPv4, jak i IPv6.
 
