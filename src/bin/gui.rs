@@ -2,7 +2,7 @@ use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use crossbeam_channel::{bounded, Receiver};
-use std::net::{SocketAddr, ToSocketAddrs, UdpSocket};
+use std::net::{Ipv6Addr, SocketAddr, ToSocketAddrs, UdpSocket};
 
 use clap::Parser;
 use lazy_static::lazy_static;
@@ -63,7 +63,7 @@ struct InputMessageSender(UdpSocket);
 struct LoadedFont(Handle<Font>);
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let socket = UdpSocket::bind(SocketAddr::from(([127, 0, 0, 1], ARGS.port))).unwrap();
+    let socket = UdpSocket::bind(SocketAddr::from((Ipv6Addr::UNSPECIFIED, ARGS.port))).unwrap();
     let socket_clone = socket.try_clone().unwrap();
 
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());

@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4, TcpListener, TcpStream, UdpSocket};
+use std::net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, TcpListener, TcpStream, UdpSocket};
 use std::str::FromStr;
 
 use clap::Parser;
@@ -87,7 +87,7 @@ fn main() {
 
     info!(args = ?ARGS.clone());
 
-    let server_address = SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), ARGS.port);
+    let server_address = SocketAddr::from((Ipv6Addr::UNSPECIFIED, ARGS.port));
 
     if ARGS.udp {
         let udp_server = UdpSocket::bind(server_address).unwrap();
