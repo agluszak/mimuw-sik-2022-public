@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **16.05.2022** - obsługa IPv6 w GUI, doprecyzowanie jak projekt ma się budować
 - **13.05.2022** - zmiana display na gui, dodanie pytań
 - **10.05.2022** - doprecyzowanie jak identyfikowani są klienci
 - **09.05.2022** - poprawki w GUI, nowe pytania w FAQ
@@ -585,16 +586,18 @@ albo obie części.
 
 Termin oddawania części A to 23.05, a termin oddawania części B to 07.06 (siódmy czerwca).
 
-Jako rozwiązanie należy dostarczyć pliki źródłowe oraz plik `makefile`, które
+Jako rozwiązanie należy dostarczyć pliki źródłowe oraz plik `makefile` ALBO `CMakeLists.txt`, które
 należy umieścić jako skompresowane archiwum w Moodle. Archiwum powinno zawierać
 tylko pliki niezbędne do zbudowania programów. Nie wolno w nim umieszczać plików
 binarnych ani pośrednich powstających podczas kompilowania programów.
 
 Po rozpakowaniu dostarczonego archiwum, w wyniku wykonania w jego głównym
-katalogu polecenia `make`, dla części A zadania ma powstać w tym katalogu plik
+katalogu polecenia `make` (`cmake . && make` jeśli używa się `CMake`),
+dla części A zadania ma powstać w tym katalogu plik
 wykonywalny `robots-client` a dla części B zadania – plik
 wykonywalny `robots-server`.
-Ponadto `makefile` powinien obsługiwać cel `clean`, który po wywołaniu kasuje
+
+`makefile` powinien obsługiwać cel `clean`, który po wywołaniu kasuje
 wszystkie pliki powstałe podczas kompilowania.
 
 ## 6. Ocena
