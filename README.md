@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **18.05.2022** - nowe pytania
 - **16.05.2022** - obsługa IPv6 w GUI, doprecyzowanie jak projekt ma się budować
 - **13.05.2022** - zmiana display na gui, dodanie pytań
 - **10.05.2022** - doprecyzowanie jak identyfikowani są klienci
@@ -662,3 +663,46 @@ Testy będą obejmowały m.in.:
 - O: Tak
 - P: Czy dwa bloki o takich samych współrzędnych są traktowane jako jeden blok, czy jako dwa różne?
 - O: Na danym polu może stać tylko jeden blok.
+- P: Czy jeśli w trakcie tury klient wyśle wiele komunikatów i część z nich jest poprawna, część nie, ale ostatni jest niepoprawny (wykonuje niedozwolony ruch), to serwer ma wziąć pod uwagę ostatni poprawny ruch wysłany w tej turze, czy zignorować wszystkie, bo ostatni wysłany był niepoprawny?
+- O: Wysłanie komunikatu niepoprawnego składniowo powoduje rozłączenie klienta. Komunikat poprawny składniowo, ale niemający sensu (np. join w czasie gry) jest ignorowany. Komunikat sensowny może oznaczać chęć wykonania niedozwolonego ruchu (wyjścia poza planszę, wejścia na blok, zablokowania zablokowanego pola), ale nie zmienia to faktu, że jest sensowny. W czasie gry liczy się ostatni nadesłany sensowny komunikat, niezależnie od tego, czy spowoduje poprawny ruch czy nie.
+- P: Czy możemy być pewni, że wiadomość od GUI przyszła z podanego adresu i wiadomości do GUI są wysyłane z podanego portu?
+Innymi słowy, czy wiadomości od GUI mamy odbierać przez receive, czy receive_from (i analogicznie wysyłać przez send, czy send_to)?
+- O: Adres i port GUI, które podaje się w kliencie, służą do wysyłania wiadomości od klienta do GUI. GUI może wysyłać komunikaty z portów efemerycznych. Ale ogólnie najlepiej nic nie zakładać o adresie GUI i być gotowym na odbieranie (poprawnych) wiadomości od kogokolwiek
+- P: Czy możemy założyć, że rozmiar planszy będzie zawierał się w praktycznych wymiarach? Plansza o maksymalnych wymiarach ma kilka miliardów pół co z punktu widzenia gry jest zupełnie niepraktyczne, a utrudnia implementacje logiki gry, gdy musimy założyć, że powinna działać dla takich wymiarów. Ujmując problem inaczej: czy możemy założyć, że deklaracja `T board[size_x][size_y]`, gdzie T jest typem o rozsądnej wielkości będzie poprawna?
+- O: Nie wydaje mi się, żeby tworzenie takiej tablicy dwuwymiarowej było do czegokolwiek potrzebne.
+- P: Co się dzieje, kiedy ktoś podłączy się w trakcie gry, jest to dozwolone? W treści jest zdanie: `Po podłączeniu klienta do serwera serwer wysyła do niego komunikat Hello. Jeśli rozgrywka jeszcze nie została rozpoczęta, serwer wysyła komunikaty AcceptedPlayer z informacją o podłączonych graczach. Jeśli rozgrywka już została rozpoczęta, serwer wysyła komunikat GameStarted z informacją o rozpoczęciu rozgrywki, a następnie wysyła komunikat Turn z informacją o aktualnym stanie gry. Numer tury w takim komunikacie to 0`. Czy jeśli rozgrywka trwa, a podłączy się klient-obserwator, to
+  a) dostaje komunikat Hello, Game Started, a później kolejne tury (tak jak gracze)
+  b) komunikat Hello, później kolejne Tury (jak gracze)
+  c) komunikat Hello, Game Started i tury numerowane od 0?
+- O: Hello, Game Started, turę 0 zawierającą wszystkie zdarzenia do tej pory i potem już normalnie
+- P: Czy klient-obserwator może wysyłać jakieś komunikaty w trakcie gry? 
+- O: Może, ale będą ignorowane
+- P: Komunikat Game do GUI w polu explosions powinien przekazywać tylko wybuchy z poprzedniej tury, tak? Czyli odebranie komunikatu bomb exploded między innymi dla klienta oznacza "zapomnienie" o danej bombie i wrzucenie jej pozycji do explosions?
+- O: Tak
+- P: Klient powinien niezależnie od serwera kontrolować timer bomb i co turę zmniejszać go o 1, nawet patrząc na to, że dostanie komunikat od serwera, gdy bomba wybuchnie?
+- O: Tak. Jak wybuchnie bomba, która nie powinna wybuchnąć, to jest UB (ale można założyć, że serwer ma zawsze rację)
+- P: Mam mały problem z gui - roboty się w nim nie wyświetlają. Przesyłam przykład, plansza na której powinien być tylko robot.
+  Ostatnia wiadomość otrzymana przez gui:
+ ```
+ 2022-05-12T14:04:23.246721Z INFO gui: {"Game":{"server_name":"zabawownia","size_x":10,"size_y":10,"game_length":1000,"turn":10,"players":{"0":{"name":"michal","socket_addr":"127.0.0.1:42704"}},"player_positions":{"0":[3,3]},"blocks":[],"bombs":[],"explosions":[],"scores":{}}}
+ ```
+ - O: W scores musi być player.
+ - P: Czy klient może połączyć się z serwerem zanim otrzyma wiadomość od gui?
+ - O: Klient łączy się z serwerem od razu po uruchomieniu
+ - P: Czy klient może wysyłać Join wielokrotnie?
+ - O: Może, ale to bez sensu
+ - P: Jak powinna zachowywać się bomba wybuchająca w bloku - niszczy ten blok i nie propaguje eksplozji dalej, czy niszczy blok i rozszerza eksplozję do swojego maksymalnego zasięgu?(Oczywiście z pominięciem ingerencji innych bloków)
+ - O: Niszczy i nie propaguje (ale roboty stojące na tym bloku są niszczone)
+ - P: Czy po zakończeniu rozgrywki klient ma wyświetlić lobby, czy planszę, a jeśli lobby, to jakie jest zastosowanie mapy scores w wiadomości GameEnded?
+ - O: Lobby, wiadomość jest potrzebna do testowania, bo inaczej nie da się dowiedzieć jakie były wyniki po ostatniej turze
+ - P: Co robi klient jeżeli otrzyma wiadomość której się nie spodziewał (np. GameEnded zanim otrzymał GameStarted, Turn przed GameStarted, Hello po otrzymaniu początkowego, pierwszego Hello)?
+ - O: UB
+ - P: Jak mamy postępować z wiadomościami które zostały zbudowane poprawnie, ale zawierają ewidentnie niepoprawne wartości (np punkt leżący poza mapą, odwołanie do id gracza lub bomby która nie istnieje)?
+ - O: UB, można zignorować
+ - P: Co zrobić z wiadomością GameStarted/GameEnded, które zawierają id graczy od których nie otrzymaliśmy komunikatu AcceptedPlayer?
+ - O: UB
+ - P: Czy klient może wysyłać do serwera w stanie lobby wiadomości nie będące join?
+ - O: Może, ale zostaną zignorowane (chodzi o to, że mogą np. dojść z opóźnieniem z ostatniej tury, kiedy serwer wróci już do stanu lobby)
+ - P: Jak klient ma postępować z bombami które zostały mu przesłane, ale nie wybuchły, mimo tego, że ich timer spadł poniżej zera?
+ - O: UB
+ 
