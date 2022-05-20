@@ -531,6 +531,8 @@ enum DrawMessage {
 }
 ```
 
+Explosions w komunikacie `Game` to lista pozycji, na których GUI ma narysować eksplozję.
+
 Klient powinien wysłać taki komunikat po każdej zmianie stanu (tzn. otrzymaniu wiadomości `Turn` jeśli rozgrywka jest w
 toku lub `AcceptedPlayer` jeśli rozgrywka się nie toczy).
 
