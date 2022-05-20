@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **20.05.2022** - WAŻNE: zmiana jak wysyłane są informacje o rozgrywce po dołączeniu w trakcie. Doprecyzowanie, w jaki sposób obliczany jest wybuch bomby. 
 - **18.05.2022** - nowe pytania
 - **16.05.2022** - obsługa IPv6 w GUI, doprecyzowanie jak projekt ma się budować
 - **13.05.2022** - zmiana display na gui, dodanie pytań
@@ -323,7 +324,7 @@ Serwer powinien przechowywać następujące informacje:
 Oraz tylko w przypadku toczącej się rozgrywki:
 
 - numer tury
-- lista wszystkich zdarzeń od początku rozgrywki
+- lista wszystkich tur od początku rozgrywki
 - pozycje graczy
 - liczba śmierci każdego gracza
 - informacje o istniejących bombach (pozycja, czas)
@@ -342,7 +343,7 @@ Po podłączeniu klienta do serwera serwer wysyła do niego komunikat `Hello`.
 Jeśli rozgrywka jeszcze nie została rozpoczęta,
 serwer wysyła komunikaty `AcceptedPlayer` z informacją o podłączonych graczach.
 Jeśli rozgrywka już została rozpoczęta, serwer wysyła komunikat `GameStarted` z informacją o rozpoczęciu rozgrywki,
-a następnie wysyła komunikat `Turn` z informacją o aktualnym stanie gry. Numer tury w takim komunikacie to 0.
+a następnie wysyła wszystkie dotychczasowe komunikaty `Turn`.
 
 Jeśli rozgrywka nie jest jeszcze rozpoczęta, to wysłanie przez klienta komunikatu `Join`
 powoduje dodanie go do listy graczy. Serwer następnie rozsyła do wszystkich klientów komunikat `AcceptedPlayer`.
@@ -400,12 +401,10 @@ zdarzenia = []
 dla każdej bomby:
     zmniejsz jej licznik czasu o 1
     jeśli licznik wynosi 0:
-        zaznacz, że bomba będzie eksplodować
-    
-dla każdej eksplodującej bomby:
-    oblicz, które bloki znikną w wyniku eksplozji
-    oblicz, które roboty zostaną zniszczone w wyniku eksplozji
-    dodaj zdarzenie `BombExploded` do listy
+        zaznacz, które bloki znikną w wyniku eksplozji
+        zaznacz, które roboty zostaną zniszczone w wyniku eksplozji
+        dodaj zdarzenie `BombExploded` do listy
+        usuń bombę    
     
 dla każdego gracza w kolejności id:
     jeśli robot nie został zniszczony:
@@ -631,7 +630,7 @@ Testy będą obejmowały m.in.:
 - komentarze powinny być w jednym języku
 - „magiczne stałe” powinny być ponazywane
 - [„Parse, don’t validate”](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/)
-
+- jeśli kod napisany jest w C++, to należy przestrzegać konwencji programowania w tym języku
 
 ## 7. FAQ
 
@@ -674,7 +673,7 @@ Innymi słowy, czy wiadomości od GUI mamy odbierać przez receive, czy receive_
   a) dostaje komunikat Hello, Game Started, a później kolejne tury (tak jak gracze)
   b) komunikat Hello, później kolejne Tury (jak gracze)
   c) komunikat Hello, Game Started i tury numerowane od 0?
-- O: Hello, Game Started, turę 0 zawierającą wszystkie zdarzenia do tej pory i potem już normalnie
+- O: a)
 - P: Czy klient-obserwator może wysyłać jakieś komunikaty w trakcie gry? 
 - O: Może, ale będą ignorowane
 - P: Komunikat Game do GUI w polu explosions powinien przekazywać tylko wybuchy z poprzedniej tury, tak? Czyli odebranie komunikatu bomb exploded między innymi dla klienta oznacza "zapomnienie" o danej bombie i wrzucenie jej pozycji do explosions?
@@ -705,4 +704,3 @@ Innymi słowy, czy wiadomości od GUI mamy odbierać przez receive, czy receive_
  - O: Może, ale zostaną zignorowane (chodzi o to, że mogą np. dojść z opóźnieniem z ostatniej tury, kiedy serwer wróci już do stanu lobby)
  - P: Jak klient ma postępować z bombami które zostały mu przesłane, ale nie wybuchły, mimo tego, że ich timer spadł poniżej zera?
  - O: UB
- 
