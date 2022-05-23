@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **23.05.2022** - Przy oddawaniu klienta pliki (lub ich części) dotyczące serwera zostaną uznane za zbędne
 - **20.05.2022** - WAŻNE: zmiana jak wysyłane są informacje o rozgrywce po dołączeniu w trakcie. Doprecyzowanie, w jaki sposób obliczany jest wybuch bomby. 
 - **18.05.2022** - nowe pytania
 - **16.05.2022** - obsługa IPv6 w GUI, doprecyzowanie jak projekt ma się budować
