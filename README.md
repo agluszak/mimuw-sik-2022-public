@@ -3,14 +3,14 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **08.06.2022** - doprecyzowanie jak wygląda koniec gry
+- **06.06.2022** - nowe pytania
 - **25.05.2023** - Doprecyzowanie, kiedy wysyłane są komunikaty do GUI:
   Po Turn - Game
   Po AcceptedPlayer, GameEnded i Hello - Lobby
   Po GameStarted - nic
 
   A wszystkie pozycje początkowe graczy i bloków są wysyłane w turze 0.
-
-- **06.06.2022** - nowe pytania
 - **24.05.2022** - Wycofanie poniższego (nie będziemy osobno oceniać jakości kodu po pierwszej części)
 - **23.05.2022** - Przy oddawaniu klienta pliki (lub ich części) dotyczące serwera zostaną uznane za zbędne
 - **20.05.2022** - WAŻNE: zmiana jak wysyłane są informacje o rozgrywce po dołączeniu w trakcie. Doprecyzowanie, w jaki sposób obliczany jest wybuch bomby. 
@@ -723,3 +723,9 @@ Innymi słowy, czy wiadomości od GUI mamy odbierać przez receive, czy receive_
  - O: Tak, można założyć, że `#include "boost/pfr.hpp"` będzie działać w środowisku testowym. Nie należy dołączać biblioteki do paczki z rozwiązaniem.
  - P: Czy można użyć jakichś innych bibliotek header-only, nie wchodzących w skład Boosta 1.74?
  - O: Nie
+
+### 08.06.2022
+
+- P: Jak wygląda koniec gry?
+- O: Serwer wysyła Turn z turn=game_length-1 czeka na ruchy użytkowników, przetwarza, wysyła Turn z turn=game_length i od razu (nic się już nie zmienia) wysyła GameEnded z wynikami. Wówczas wyniki wysłane przez serwer powinny być takie jak obliczone w kliencie.
+
