@@ -3,7 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
-- **08.06.2022** - doprecyzowanie jak wygląda koniec gry
+- **08.06.2022** - doprecyzowanie jak wygląda koniec gry, dodanie skryptu `verifier.sh`
 - **06.06.2022** - nowe pytania
 - **25.05.2023** - Doprecyzowanie, kiedy wysyłane są komunikaty do GUI:
   Po Turn - Game
@@ -728,4 +728,5 @@ Innymi słowy, czy wiadomości od GUI mamy odbierać przez receive, czy receive_
 
 - P: Jak wygląda koniec gry?
 - O: Serwer wysyła Turn z turn=game_length-1 czeka na ruchy użytkowników, przetwarza, wysyła Turn z turn=game_length i od razu (nic się już nie zmienia) wysyła GameEnded z wynikami. Wówczas wyniki wysłane przez serwer powinny być takie jak obliczone w kliencie.
-
+- P: Czy można prosić o przykład, jak powinna wyglądać jakaś krótka rozgrywka?
+- O: Załóżmy, że serwer został uruchomiony z parametrami `-b 1 -c 1 -l 3`. Do serwera w stanie lobby podłącza się klient. Otrzymuje on komunikat `Hello`. Serwer nadal jest w stanie lobby, dopóki klient nie wyśle komunikatu `Join`. Wówczas serwer wysyła kolejno komunikat `AcceptedPlayer`, przechodzi w stan rozgrywki i wysyła kolejno: `GameStarted`, `Turn 0` (z początkową pozycją gracza i bloku). Zaczyna się tura 1. Załóżmy, że w czasie jej trwania gracz kładzie bombę. Serwer wówczas wyśle turę o numerze 1 ze zdarzeniem `BombPlaced`. W i-tej (gdzie i >= 1) turze najpierw jest faza otrzymywania wiadomości od klientów, a później podsumowanie tej fazy poprzez wysłanie komunikatu do klientów. Rozpoczyna się druga tura. Załóżmy, że teraz dołącza drugi klient, który staje się obserwatorem. Serwer wyśle do niego kolejno: `Hello`, `GameStarted`, `Turn 0`, `Turn 1` (tury wysyłane są z identycznymi zdarzeniami jak do pierwszego klienta - żeby obserwator mógł "nadrobić" stan gry). Teraz serwer wyśle do obu klientów turę o numerze 2 ze zdarzeniami `BombExploded`, `PlayerMoved` (bo gracz się "odrodzi" na innym polu - jeśli w czasie trwania drugiej tury chciał wykonać jakiś ruch, to zostanie on zignorowany, bo robot w tej turze został zniszczony) oraz `BlockDestroyed` (o ile blok został zniszczony). Rozpoczyna się trzecia tura. Załóżmy, że teraz gracz się poruszył. Wówczas serwer wyśle do obu klientów turę (o numerze 3) ze zdarzeniem `PlayerMoved` i od razu `GameEnded`.
