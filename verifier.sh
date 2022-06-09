@@ -18,7 +18,7 @@ function check_executable() {
     fi
 
     # Check if output is non-empty
-    if [ -s "$OUTPUT" ]; then
+    if [ ! -s "$OUTPUT" ]; then
       echo "$EXECUTABLE should output help text to stdout when -h is given"
     fi
   fi
