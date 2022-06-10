@@ -3,6 +3,7 @@
 Pytania proszę wysyłać na adres agluszak@mimuw.edu.pl.
 
 Historia zmian:
+- **10.06.2022** - doprecyzowanie jak przebiega generacja początkowych bloków
 - **08.06.2022** - doprecyzowanie jak wygląda koniec gry, dodanie skryptu `verifier.sh`
 - **06.06.2022** - nowe pytania
 - **25.05.2023** - Doprecyzowanie, kiedy wysyłane są komunikaty do GUI:
@@ -387,7 +388,8 @@ tyle razy ile wynosi parametr `initial_blocks`:
     pozycja_x_bloku = random() % szerokość_planszy
     pozycja_y_bloku = random() % wysokość_planszy
     
-    dodaj zdarzenie `BlockPlaced` do listy
+    jeśli nie ma bloku o pozycji (pozycja_x_bloku, pozycja_y_bloku) na liście:
+        dodaj zdarzenie BlockPlaced do listy
     
 wyślij komunikat `Turn`
 ```
